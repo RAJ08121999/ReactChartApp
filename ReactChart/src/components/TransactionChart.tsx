@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetchData } from "../api"
 import Spinner from "./Spinner";
-import { CartesianGrid,
-         Line, 
-         LineChart, 
+import { Bar, BarChart, CartesianGrid,
+         Cell,
          ResponsiveContainer, 
          Tooltip, 
          XAxis ,
          YAxis,
         } from "recharts";
-import type { CustomTooltipProps } from "../types";
+import type { CustomTooltipProps,} from "../types";
 
 const TransactionChart = () => {
     const { data , isLoading , isError , error } = useQuery({
@@ -17,7 +16,9 @@ const TransactionChart = () => {
         queryFn:fetchData
     });
 
-    if(isLoading) return <Spinner/>
+    if(isLoading) return (<div className="min-h-screen w-full flex justify-center items-center">
+      <Spinner/>
+    </div>)
     if(isError) return <p>Error in fetching data {error.message}</p>
 
     if(!data || data.length === 0 ){
@@ -34,27 +35,26 @@ const TransactionChart = () => {
 
     const formattedData = sortedData.map(item => ({
         ...item,
-        date: new Date(item.date).toISOString().split("T")[0]
+        displayDate: new Date(item.date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric'
+        }),
+        amount:Number(item.amount),
+        uid:`${item.date}-${item.id}`
     }));
 
-    const CustomTooltip:React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+    const CustomTooltip:React.FC<CustomTooltipProps> = ({ active, payload, }) => {
         if (active && payload && payload.length) {
-          const { amount, description } = payload[0].payload;
+          const { amount, description ,displayDate } = payload[0].payload;
           return (
             <div
-              style={{
-                backgroundColor: "white",
-                border: "1px solid #ccc",
-                padding: "8px",
-                borderRadius: "8px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              }}
+            className="bg-gray-800 text-white p-2 rounded"
             >
-              <p style={{ margin: 0, fontWeight: "bold" }}>Date: {label}</p>
-              <p style={{ margin: 0, color: amount >= 0 ? "green" : "red" }}>
-                Amount: {amount}
+              <p>{`Date: ${displayDate}`}</p>
+              <p>
+                {`Amount: ${amount}`}
               </p>
-              <p style={{ margin: 0 }}>{description}</p>
+              <p>{`Description:${description||'will be added'}`}</p>
             </div>
           );
         }
@@ -63,23 +63,30 @@ const TransactionChart = () => {
       
 
   return (
-    <div className="w-full h-[600px]">
+    <div className="w-full h-[500px] sm:h-[400px] xs:h-[350px] overflow-x-auto">
 
-      <ResponsiveContainer width="100%" height={450} >
-        <LineChart data={formattedData}>
-            <CartesianGrid stroke="#ccc" strokeDasharray= "3 3"/>
-            <XAxis dataKey="date"/>
-            <YAxis/>
-            <Tooltip content={(props) => <CustomTooltip {...(props as CustomTooltipProps)} />} />
-            <Line 
-            type="monotone" 
-            dataKey="amount" 
-            stroke="#4ade80" 
-            strokeWidth={2} 
-            dot={{ r: 5 }}
-            activeDot={{r:8}}
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={formattedData}>
+            <CartesianGrid stroke="#ffffff" strokeDasharray= "3 3"/>
+            <XAxis
+              dataKey="displayDate"
+              tick={{ fill: "#ffffff", fontSize: 14 }} 
             />
-        </LineChart>
+            <YAxis
+             tick={{ fill: "#ffffff", fontSize: 14 }} 
+            />
+            <Tooltip content={<CustomTooltip/>} />
+            <Bar
+              dataKey="amount"
+              barSize={40}>
+              {formattedData.map((entry)=>(
+                <Cell
+                key={entry.uid}
+                fill={entry.amount >= 0 ? "#4ade80" : "#f87171"}
+                />
+              ))}
+            </Bar>
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

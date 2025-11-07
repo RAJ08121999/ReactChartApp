@@ -13,7 +13,8 @@ export type CustomTooltipProps = {
         payload:{
             amount:number;
             description:string;
+            displayDate:string
         };
     }[];
-    label:string;
+    label?:string|number|undefined;
 } 

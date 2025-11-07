@@ -52,21 +52,56 @@ const TransactionForm = () => {
 
 
   return (
-    <div>
-      <form onSubmit={(e)=>handleSubmit(e)}>
-        <label>Date:</label>
-        <input type="date" name = "date" onChange={(e)=>handleChange(e)} value={formData.date} required />
+    <div className="max-w-md mx-auto mt-10 p-6 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg animate-fadeIn">
+      <h2 className="text-2xl font-bold text-white mb-6 text-center">
+        Add Transaction
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-white font-semibold mb-1">Date:</label>
+          <input
+            type="date"
+            name="date"
+            onChange={handleChange}
+            value={formData.date}
+            required
+            className="w-full px-4 py-2 rounded-lg border border-white/50 focus:border-white focus:ring-2 focus:ring-white/40 outline-none transition duration-300"
+          />
+        </div>
 
-        <label>Amount:</label>
-        <input type="number" name = "amount" onChange={(e)=>handleChange(e)} value={formData.amount} required />
+        <div>
+          <label className="block text-white font-semibold mb-1">Amount:</label>
+          <input
+            type="number"
+            name="amount"
+            onChange={handleChange}
+            value={formData.amount}
+            required
+            className="w-full px-4 py-2 rounded-lg border border-white/50 focus:border-white focus:ring-2 focus:ring-white/40 outline-none transition duration-300"
+          />
+        </div>
 
-        <label>Description:</label>
-        <input type="text" name="description" onChange={(e)=>handleChange(e)} value={formData.description}/>
+        <div>
+          <label className="block text-white font-semibold mb-1">Description:</label>
+          <input
+            type="text"
+            name="description"
+            onChange={handleChange}
+            value={formData.description}
+            placeholder="Optional"
+            className="w-full px-4 py-2 rounded-lg border border-white/50 focus:border-white focus:ring-2 focus:ring-white/40 outline-none transition duration-300"
+          />
+        </div>
 
-        <button type="submit">Add</button>
+        <button
+          type="submit"
+          className="w-full py-3 mt-4 bg-linear-to-r from-green-400 via-blue-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:scale-105 transform transition duration-300 hover:shadow-xl"
+        >
+          Add Transaction
+        </button>
       </form>
     </div>
-  )
+  );
 }
 
 export default TransactionForm
