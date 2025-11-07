@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { TransactionData } from "./types";
 
-const baseUrl = "";
+const baseUrl = "https://reactchartapp-1.onrender.com/transactions";
 
 //fetch data;
 export const fetchData = async () =>{
