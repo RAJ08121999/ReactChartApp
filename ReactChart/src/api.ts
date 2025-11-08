@@ -4,24 +4,26 @@ import type { TransactionData } from "./types";
 const baseUrl = "https://reactchartapp-1.onrender.com/transactions";
 
 //fetch data;
-export const fetchData = async () =>{
+export const fetchData = async ():Promise<TransactionData[]> =>{
     try{
-        const res = await axios.get(baseUrl);
+        const res = await axios.get<TransactionData[]>(baseUrl);
         return res.data;
     }
     catch(error){
         console.log("Error in fetching data",error);
+        throw error;
     }
 };
 
 // post data;
 
-export const postData = async (data:TransactionData) =>{
+export const postData = async (data:TransactionData):Promise<TransactionData> => {
     try{
-        const res = await axios.post(baseUrl,data);
+        const res = await axios.post<TransactionData>(baseUrl,data);
         return res.data;
     }
     catch(error){
         console.log("Error in posting data",error);
+        throw error;
     }
 };

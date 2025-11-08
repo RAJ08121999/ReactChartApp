@@ -13,7 +13,8 @@ export type CustomTooltipProps = {
         payload:{
             amount:number;
             description:string;
-            displayDate:string
+            displayDate:string;
+            cumulativeSum:number;
         };
     }[];
     label?:string|number|undefined;

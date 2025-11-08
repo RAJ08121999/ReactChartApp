@@ -24,12 +24,13 @@ const TransactionForm = () => {
 
     function handleSubmit(e:React.FormEvent){
         e.preventDefault();
-        postDataMutation.mutate(formData);
 
         const newTransactions = {
             ...formData,
             id:Date.now().toString(),
         };
+
+        postDataMutation.mutate(formData);
 
         console.log(`Submitting:${newTransactions}`);
 
@@ -52,11 +53,12 @@ const TransactionForm = () => {
 
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg animate-fadeIn">
+    <div className="max-w-4xl mx-auto mt-2 p-4 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg animate-fadeIn">
       <h2 className="text-2xl font-bold text-white mb-6 text-center">
         Add Transaction
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex justify-around items-center max-w-full ">
         <div>
           <label className="block text-white font-semibold mb-1">Date:</label>
           <input
@@ -89,13 +91,14 @@ const TransactionForm = () => {
             onChange={handleChange}
             value={formData.description}
             placeholder="Optional"
-            className="w-full px-4 py-2 rounded-lg border border-white/50 focus:border-white focus:ring-2 focus:ring-white/40 outline-none transition duration-300"
+            className="w-full px-4 py-2 rounded-lg border border-white/50 focus:border-white focus:ring-2 focus:ring-white/40 outline-none transition duration-300 focus:bg-transparent"
           />
+        </div>
         </div>
 
         <button
           type="submit"
-          className="w-full py-3 mt-4 bg-linear-to-r from-green-400 via-blue-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:scale-105 transform transition duration-300 hover:shadow-xl"
+          className="w-full py-3 mt-4 bg-linear-to-r from-green-400 via-blue-500 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:scale-102 transform transition duration-300 hover:shadow-xl"
         >
           Add Transaction
         </button>

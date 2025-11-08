@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetchData } from "../api"
 import Spinner from "./Spinner";
-import { Bar, BarChart, CartesianGrid,
-         Cell,
+import { CartesianGrid,
+         Line,
+         LineChart,
          ResponsiveContainer, 
          Tooltip, 
          XAxis ,
@@ -31,29 +32,36 @@ const TransactionChart = () => {
         (a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
-    // ensure date is formatted as a string 
 
-    const formattedData = sortedData.map(item => ({
+    // compute cumulative sum and format data
+    let cumulative = 0;
+    const formattedData = sortedData.map(item => {
+      cumulative+=Number(item.amount);
+      return {
         ...item,
-        displayDate: new Date(item.date).toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric'
+        uid:`${item.date}-${item.id}`,
+        displayDate:new Date(item.date).toLocaleDateString('en-US',{
+          month:'short',
+          day:'numeric'
         }),
         amount:Number(item.amount),
-        uid:`${item.date}-${item.id}`
-    }));
+        cumulativeSum:cumulative
+      }
+    });
+
+    // Determine line color based on final cumulative sum
+    const lineColor = cumulative >= 0 ? "#166534" : "#991b1b";
 
     const CustomTooltip:React.FC<CustomTooltipProps> = ({ active, payload, }) => {
         if (active && payload && payload.length) {
-          const { amount, description ,displayDate } = payload[0].payload;
+          const { cumulativeSum, description ,displayDate ,amount } = payload[0].payload;
           return (
             <div
             className="bg-gray-800 text-white p-2 rounded"
             >
               <p>{`Date: ${displayDate}`}</p>
-              <p>
-                {`Amount: ${amount}`}
-              </p>
+              <p>{`Amount: ${amount}`}</p>
+              <p>{`Total: ${cumulativeSum}`}</p>
               <p>{`Description:${description||'will be added'}`}</p>
             </div>
           );
@@ -66,27 +74,43 @@ const TransactionChart = () => {
     <div className="w-full h-[500px] sm:h-[400px] xs:h-[350px] overflow-x-auto">
 
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={formattedData}>
+
+        <LineChart data={formattedData}>
+
             <CartesianGrid stroke="#ffffff" strokeDasharray= "3 3"/>
-            <XAxis
-              dataKey="displayDate"
+
+            <XAxis 
+              dataKey="uid" 
+              tickFormatter={(uid) => {
+                const item = formattedData.find(d => d.uid === uid);
+                return item ? item.displayDate : "";
+              }} 
+              tick={{ fill: "#ffffff", fontSize: 14 }}
+             />
+
+            <YAxis
               tick={{ fill: "#ffffff", fontSize: 14 }} 
             />
-            <YAxis
-             tick={{ fill: "#ffffff", fontSize: 14 }} 
-            />
+
             <Tooltip content={<CustomTooltip/>} />
-            <Bar
-              dataKey="amount"
-              barSize={40}>
-              {formattedData.map((entry)=>(
-                <Cell
-                key={entry.uid}
-                fill={entry.amount >= 0 ? "#4ade80" : "#f87171"}
-                />
-              ))}
-            </Bar>
-        </BarChart>
+
+            <Line
+              type="monotone"
+              dataKey="cumulativeSum"
+              stroke={lineColor}
+              dot={(props) => {
+                const { cx, cy, } = props;
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={2}
+                    fill={lineColor}
+                  />
+                );
+              }}
+            />  
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );
